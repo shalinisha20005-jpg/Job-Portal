@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ job.title }} | JobPortal</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <aside class="sidebar">
+            <h2>JobPortal</h2>
+            <p>Job Seeker Panel</p>
+
+            <nav>
+                <a href="{{ url_for('job_seeker_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('jobs') }}">Browse Jobs</a>
+                <a href="{{ url_for('my_applications') }}">My Applications</a>
+                <a href="{{ url_for('profile') }}">My Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+
+            <div class="quick-card">
+
+                <h1>{{ job.title }}</h1>
+
+                <h3>{{ job.company_name }}</h3>
+
+                <p><strong>Location:</strong> {{ job.location }}</p>
+
+                <p><strong>Salary:</strong>
+                    {{ job.salary or "Not specified" }}
+                </p>
+
+                <p><strong>Job Type:</strong>
+                    {{ job.job_type or "Not specified" }}
+                </p>
+
+                <hr>
+
+                <h2>Job Description</h2>
+                <p>{{ job.description }}</p>
+
+                <h2>Requirements</h2>
+                <p>{{ job.requirements or "Not specified" }}</p>
+
+                <br>
+                <form method="POST"
+                      action="{{ url_for('apply_job', job_id=job.id) }}"
+                      enctype="multipart/form-data">
+
+                    <label>Upload Your Resume (PDF)</label>
+                    <input type="file"
+                           name="resume"
+                           accept=".pdf,application/pdf"
+                           required>
+
+                   <button type="submit" class="create-account">
+                       Apply for This Job
+                   </button>
+
+                </form>
+
+                <a href="{{ url_for('jobs') }}" class="create-account">
+                    Back to Jobs
+                </a>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

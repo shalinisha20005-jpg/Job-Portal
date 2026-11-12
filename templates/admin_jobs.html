@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Jobs | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2>Admin Panel</h2>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Manage Users</a>
+            <a href="{{ url_for('admin_jobs') }}">Manage Jobs</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </aside>
+
+        <main class="dashboard-main">
+            <h1>Manage Jobs</h1>
+            <p>View all jobs posted by employers.</p>
+
+<form method="GET" action="{{ url_for('admin_jobs') }}" class="job-search-form">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search job title, company, or location..."
+        value="{{ search }}"
+    >
+
+    <button type="submit" class="create-account">
+        Search
+    </button>
+
+    <a href="{{ url_for('admin_jobs') }}">
+        Clear
+    </a>
+
+</form>
+
+
+            <div class="quick-card">
+                <h3>Total Jobs: {{ jobs|length }}</h3>
+            </div>
+
+            <div class="quick-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Location</th>
+                            <th>Job Type</th>
+                            <th>Posted Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in jobs %}
+                        <tr>
+                            <td>{{ job.id }}</td>
+                            <td>{{ job.title }}</td>
+                            <td>{{ job.company_name }}</td>
+                            <td>{{ job.location }}</td>
+                            <td>{{ job.job_type }}</td>
+                            <td>{{ job.created_at.strftime('%d-%m-%Y') if job.created_at else 'N/A' }}</td>
+                            <td>
+                              <form method="POST"
+                                    action="{{ url_for('admin_delete_job', job_id=job.id) }}"
+                                    onsubmit="return confirm('Are you sure you want to delete this job and its applications?');">
+
+                                  <button type="submit" class="delete-button">
+                                     Delete
+                                  </button>
+
+                               </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7">No jobs posted yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

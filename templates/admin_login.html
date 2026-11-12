@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | JobPortal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+
+    <div class="register-container">
+
+        <div class="register-info">
+            <h1>Admin Portal</h1>
+            <p>Manage users, jobs and applications from one place.</p>
+        </div>
+
+        <div class="register-form">
+            <h2>Admin Login</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+
+                <label>Username</label>
+                <input type="text" name="username"
+                       placeholder="Enter admin username" required>
+
+                <label>Password</label>
+                <input type="password" name="password"
+                       placeholder="Enter admin password" required>
+
+                <button type="submit" class="create-account">
+                    Admin Login
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

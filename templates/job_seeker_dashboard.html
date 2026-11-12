@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Job Seeker Dashboard | JobPortal</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <h2 class="dashboard-logo">JobPortal<span>.</span></h2>
+
+        <p class="menu-label">MENU</p>
+
+        <a href="{{ url_for('job_seeker_dashboard') }}" class="side-link active">▦ Dashboard</a>
+
+        <a href="{{ url_for('jobs') }}" class="side-link">⌕ Find Jobs</a>
+
+        <a href="{{ url_for('my_applications') }}" class="side-link">▤ My Applications</a>
+
+        <a href="{{ url_for('profile') }}" class="side-link">◉ My Profile</a>
+
+        <div class="sidebar-bottom">
+            <a href="{{ url_for('logout') }}" class="side-link logout-link">↪ Logout</a>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+
+        <header class="dashboard-header">
+
+            <div>
+                <h2>Dashboard</h2>
+                <p>Welcome back, {{ current_user.full_name }}!</p>
+            </div>
+
+            <div class="user-profile">
+                <div class="avatar">
+                    {{ current_user.full_name[0]|upper }}
+                </div>
+
+                <div>
+                    <strong>{{ current_user.full_name }}</strong>
+                    <small>Job Seeker</small>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- WELCOME BANNER -->
+        <section class="welcome-banner">
+
+            <div>
+                <span>YOUR CAREER JOURNEY</span>
+
+                <h1>Find the Job That<br>Matches Your Ambition.</h1>
+
+                <p>Explore opportunities and take the next step in your career.</p>
+
+                <a href="{{ url_for('jobs') }}" class="banner-button">
+                    Explore Jobs →
+                </a>
+            </div>
+
+            <div class="banner-icon">💼</div>
+
+        </section>
+
+
+        <!-- STATISTICS -->
+<section class="dashboard-stats">
+
+    <div class="stat-card">
+        <span>Total Applications</span>
+        <h2>{{ total_applications }}</h2>
+        <p>Applications submitted</p>
+    </div>
+
+    <div class="stat-card">
+        <span>Pending</span>
+        <h2>{{ pending_applications }}</h2>
+        <p>Waiting for employer response</p>
+    </div>
+
+    <div class="stat-card">
+        <span>Accepted</span>
+        <h2>{{ accepted_applications }}</h2>
+        <p>Applications accepted</p>
+    </div>
+
+    <div class="stat-card">
+        <span>Rejected</span>
+        <h2>{{ rejected_applications }}</h2>
+        <p>Applications rejected</p>
+    </div>
+
+</section>
+
+<!-- PROFILE COMPLETION -->
+<section class="quick-section">
+    <h2>Profile Completion</h2>
+
+    <div class="quick-card">
+        <p>Your profile is {{ profile_completion }}% complete</p>
+
+        <progress value="{{ profile_completion }}" max="100" style="width: 100%; height: 12px;"></progress>
+    </div>
+</section>
+
+
+<!-- RECENT APPLICATIONS -->
+<section class="quick-section">
+
+    <h2>Recent Applications</h2>
+
+    {% if recent_applications %}
+
+    <div class="quick-grid">
+
+        {% for application in recent_applications %}
+
+        <div class="quick-card">
+
+            <h3>{{ application.job.title }}</h3>
+
+            <p>{{ application.job.company_name }}</p>
+
+            <p>
+                Status:
+                <strong>{{ application.status }}</strong>
+            </p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <p>You haven't applied for any jobs yet.</p>
+
+    {% endif %}
+
+</section>
+
+<div style="margin-top: 20px;">
+    <a href="{{ url_for('my_applications') }}" class="banner-button">
+        View All Applications →
+    </a>
+</div>
+
+
+
+                <!-- QUICK ACTIONS -->
+        <section class="quick-section">
+
+            <h2>Quick Actions</h2>
+
+            <div class="quick-grid">
+
+                <a href="{{ url_for('jobs') }}" class="quick-card">
+                    <span>🔍</span>
+                    <h3>Find Jobs</h3>
+                    <p>Search for new opportunities.</p>
+                </a>
+
+                <a href="{{ url_for('my_applications') }}" class="quick-card">
+                    <span>📋</span>
+                    <h3>My Applications</h3>
+                    <p>Check your application status.</p>
+                </a>
+
+                <a href="{{ url_for('profile') }}" class="quick-card">
+                    <span>👤</span>
+                    <h3>My Profile</h3>
+                    <p>Manage your personal details.</p>
+                </a>
+
+            </div>
+
+        </section>
+        <!-- APPLICATION STATUS CHART -->
+    <section class="quick-section">
+    <h2>Application Status Overview</h2>
+
+    <div style="max-width: 600px; margin: 20px auto;">
+        <canvas id="applicationChart" data-values="{{ [pending_applications, accepted_applications, rejected_applications] | tojson }}"></canvas>
+    </div>
+</section>
+
+    </main>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+
+<script>
+    const ctx = document.getElementById('applicationChart');
+
+    
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Pending', 'Accepted', 'Rejected'],
+        datasets: [{
+            label: 'Application Count',
+            data: JSON.parse(ctx.dataset.values),
+            backgroundColor: [
+                '#8b5cf6',
+                '#6d28d9',
+                '#c4b5fd'
+            ],
+            borderRadius: 8
+        }]
+    },
+    plugins: [ChartDataLabels],
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false
+            },
+            datalabels: {
+                color: '#ffffff',
+                anchor: 'end',
+                align: 'start',
+                font: {
+                    weight: 'bold'
+                },
+                formatter: function(value) {
+                    return value;
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>

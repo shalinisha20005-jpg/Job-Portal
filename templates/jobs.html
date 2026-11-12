@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Jobs | JobPortal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>JobPortal</h2>
+            <p>Job Seeker Panel</p>
+
+            <nav>
+                <a href="{{ url_for('job_seeker_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('jobs') }}">Browse Jobs</a>
+                <a href="{{ url_for('my_applications') }}">My Applications</a>
+                <a href="{{ url_for('profile') }}">My Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+
+            <h1>Find Your Dream Job</h1>
+            <p>Explore opportunities and take the next step in your career.</p>
+
+            <!-- Search Form -->
+            
+<!-- Search Form -->
+<form method="GET" action="{{ url_for('jobs') }}" class="job-search-form">
+
+    <input
+        type="text"
+        name="keyword"
+        placeholder="Job title or company"
+        value="{{ request.args.get('keyword', '') }}"
+    >
+
+    <input
+        type="text"
+        name="location"
+        placeholder="Enter location"
+        value="{{ request.args.get('location', '') }}"
+    >
+
+    <select name="job_type">
+        <option value="">All Job Types</option>
+
+        <option value="Full Time"
+    {% if request.args.get('job_type') == 'Full Time' %}selected{% endif %}>
+    Full Time
+</option>
+
+        <option value="Part-time"
+            {% if request.args.get('job_type') == 'Part-time' %}selected{% endif %}>
+            Part-time
+        </option>
+
+        <option value="Internship"
+            {% if request.args.get('job_type') == 'Internship' %}selected{% endif %}>
+            Internship
+        </option>
+
+        <option value="Remote"
+            {% if request.args.get('job_type') == 'Remote' %}selected{% endif %}>
+            Remote
+        </option>
+    </select>
+    
+<select name="sort_by">
+    <option value="newest"
+        {% if request.args.get('sort_by', 'newest') == 'newest' %}selected{% endif %}>
+        Newest Jobs
+    </option>
+
+    <option value="oldest"
+        {% if request.args.get('sort_by') == 'oldest' %}selected{% endif %}>
+        Oldest Jobs
+    </option>
+</select>
+
+    <button type="submit" class="create-account">
+        Search Jobs
+    </button>
+
+    <a href="{{ url_for('jobs') }}" class="create-account">
+        Clear Filters
+    </a>
+
+</form>
+
+            <!-- Job Listings -->
+            <h2>Available Jobs</h2>
+
+            <p>{{ jobs|length }} job(s) found</p>
+
+            {% if jobs %}
+
+                {% for job in jobs %}
+
+                    <div class="quick-card">
+
+                        <h3>{{ job.title }}</h3>
+
+                        <p><strong>Company:</strong> {{ job.company_name }}</p>
+
+                        <p><strong>Location:</strong> {{ job.location }}</p>
+
+                        <p><strong>Salary:</strong>
+                            {{ job.salary or "Not specified" }}
+                        </p>
+
+                        <p><strong>Job Type:</strong>
+                            {{ job.job_type or "Not specified" }}
+                        </p>
+
+                        <p>{{ job.description }}</p>
+
+                        <a href="{{ url_for('job_details', job_id=job.id) }}"
+                           class="create-account">
+                            View Details
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="quick-card">
+                    <h3>No Jobs Found</h3>
+                    <p>Try another job title or location.</p>
+                </div>
+
+            {% endif %}
+
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Applications | Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <h2>Admin Panel</h2>
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_users') }}">Manage Users</a>
+            <a href="{{ url_for('admin_jobs') }}">Manage Jobs</a>
+            <a href="{{ url_for('admin_applications') }}">Applications</a>
+            <a href="{{ url_for('admin_logout') }}">Logout</a>
+        </aside>
+
+        <main class="dashboard-main">
+            <h1>Manage Applications</h1>
+
+            
+           <form method="GET"
+                 action="{{ url_for('admin_applications') }}"
+                 class="job-search-form">
+
+               <select name="status">
+
+                 <option value=""
+                   {% if not status %}selected{% endif %}>
+                   All Applications
+                 </option>
+
+                <option value="Pending"
+                  {% if status == "Pending" %}selected{% endif %}>
+                  Pending
+                </option>
+
+                <option value="Accepted"
+                  {% if status == "Accepted" %}selected{% endif %}>
+                  Accepted
+                </option>
+
+                <option value="Rejected"
+                 {% if status == "Rejected" %}selected{% endif %}>
+                 Rejected
+                </option>
+
+               </select>
+
+           <button type="submit" class="create-account">
+             Filter
+           </button>
+
+           <a href="{{ url_for('admin_applications') }}">
+              Clear
+           </a>
+
+           </form>
+
+
+            <p>Total applications: {{ applications|length }}</p>
+            <h1>All Applications</h1>
+            <p>View applications submitted by job seekers.</p>
+
+            <div class="quick-card">
+                <h3>Total Applications: {{ applications|length }}</h3>
+            </div>
+
+            <div class="quick-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Applicant</th>
+                            <th>Email</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Resume</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.applicant.full_name }}</td>
+                            <td>{{ application.applicant.email }}</td>
+                            <td>{{ application.job.title }}</td>
+                            <td>{{ application.job.company_name }}</td>
+                            <td>
+                                {{ application.applied_at.strftime('%d-%m-%Y') if application.applied_at else 'N/A' }}
+                            </td>
+                            <td>{{ application.status }}</td>
+                            <td>
+                                <a href="{{ url_for('static', filename='resumes/' + application.resume_filename) }}" target="_blank">
+                                    View Resume
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7">No applications submitted yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
+

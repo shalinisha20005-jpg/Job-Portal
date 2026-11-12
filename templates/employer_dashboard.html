@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard | JobPortal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <aside class="sidebar">
+            <h2>JobPortal</h2>
+            <p>Employer Panel</p>
+
+            <nav>
+                <a href="{{ url_for('employer_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('post_job') }}">Post a Job</a>
+                <a href="{{ url_for('employer_applicants') }}">View Applicants</a>
+                <a href="{{ url_for('jobs') }}">Browse Jobs</a>
+                <a href="{{ url_for('profile') }}">My Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+
+            <h1>Welcome, {{ current_user.full_name }}!</h1>
+            <p>Manage your job opportunities and recruitment activities.</p>
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>{{ employer_jobs|length }}</h3>
+                    <p>Jobs Posted</p>
+                </div>
+            </div>
+
+            <h2>Your Job Listings</h2>
+
+            {% if employer_jobs %}
+                {% for job in employer_jobs %}
+                    <div class="quick-card">
+                        <h3>{{ job.title }}</h3>
+                        <p>{{ job.company_name }}</p>
+                        <p>{{ job.location }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You haven't posted any jobs yet.</p>
+            {% endif %}
+
+        </main>
+    </div>
+
+</body>
+</html>

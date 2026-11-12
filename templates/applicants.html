@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applicants | JobPortal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <aside class="sidebar">
+            <h2>JobPortal</h2>
+            <p>Employer Panel</p>
+
+            <nav>
+                <a href="{{ url_for('employer_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('post_job') }}">Post a Job</a>
+                <a href="{{ url_for('employer_applicants') }}">View Applicants</a>
+                <a href="{{ url_for('profile') }}">My Profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </nav>
+        </aside>
+
+        <main class="dashboard-main">
+
+            <h1>Job Applicants</h1>
+            <p>Manage applications received for your job postings.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h3>{{ applications|length }}</h3>
+                    <p>Total Applicants</p>
+                </div>
+            </div>
+
+            {% if applications %}
+
+                {% for application in applications %}
+
+                    <div class="quick-card">
+
+                        <h3>{{ application.applicant.full_name }}</h3>
+
+                        <p>
+                            <strong>Email:</strong>
+                            {{ application.applicant.email }}
+                        </p>
+
+                        <p>
+                            <strong>Applied For:</strong>
+                            {{ application.job.title }}
+                        </p>
+
+                        <p>
+                            <strong>Company:</strong>
+                            {{ application.job.company_name }}
+                        </p>
+
+                        <p>
+                            <strong>Applied On:</strong>
+                            {{ application.applied_at.strftime('%d-%m-%Y') if application.applied_at else "Not available" }}
+                        </p>
+
+                        <p>
+                            <strong>Resume:</strong>
+
+                            {% if application.resume_filename %}
+                                <a href="{{ url_for('static', filename='resumes/' + application.resume_filename) }}"
+                                   target="_blank">
+                                    View Resume
+                                </a>
+                            {% else %}
+                                Not uploaded
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            <strong>Status:</strong>
+                            <span class="application-status {{ application.status|lower }}">
+                                {{ application.status }}
+                            </span>
+                        </p>
+
+                        <form method="POST"
+                              action="{{ url_for('update_application', application_id=application.id) }}">
+
+                            <label>Update Application Status</label>
+
+                            <select name="status" required>
+                                <option value="Pending"
+                                    {% if application.status == "Pending" %}selected{% endif %}>
+                                    Pending
+                                </option>
+
+                                <option value="Accepted"
+                                    {% if application.status == "Accepted" %}selected{% endif %}>
+                                    Accepted
+                                </option>
+
+                                <option value="Rejected"
+                                    {% if application.status == "Rejected" %}selected{% endif %}>
+                                    Rejected
+                                </option>
+                            </select>
+
+                            <button type="submit" class="create-account">
+                                Update Status
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="quick-card">
+                    <h3>No Applicants Yet</h3>
+                    <p>Applicants will appear here when job seekers apply for your jobs.</p>
+                </div>
+
+            {% endif %}
+
+        </main>
+
+    </div>
+
+</body>
+</html>

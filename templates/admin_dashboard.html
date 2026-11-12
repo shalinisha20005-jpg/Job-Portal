@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | JobPortal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+    <div class="dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <h2>JobPortal</h2>
+            <p>Admin Panel</p>
+
+            <nav>
+                <a href="{{ url_for('admin_dashboard') }}">
+                    Dashboard
+                </a>
+
+                <a href="{{ url_for('employer_applicants') }}">
+                    Applications
+                </a>
+
+                <a href="{{ url_for('admin_users') }}">
+                    Manage Users
+                </a>
+
+                <a href="{{ url_for('admin_jobs') }}">
+                    Manage Jobs
+                </a>
+
+                <a href="{{ url_for('admin_applications') }}">
+                    Manage Applications
+                </a>
+
+                <a href="{{ url_for('admin_logout') }}">
+                    Logout
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- MAIN DASHBOARD -->
+        <main class="dashboard-main">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>Welcome to JobPortal Administration.</p>
+
+            <div class="dashboard-stats">
+
+                <div class="stat-card">
+                    <h3>{{ total_users }}</h3>
+                    <p>Total Users</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ total_job_seekers }}</h3>
+                    <p>Job Seekers</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ total_employers }}</h3>
+                    <p>Employers</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ total_jobs }}</h3>
+                    <p>Posted Jobs</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>{{ total_applications }}</h3>
+                    <p>Applications</p>
+                </div>
+
+            </div>
+            <div class="stat-card">
+    <h3>{{ pending_applications }}</h3>
+    <p>Pending Applications</p>
+</div>
+
+<div class="stat-card">
+    <h3>{{ accepted_applications }}</h3>
+    <p>Accepted Applications</p>
+</div>
+
+<div class="stat-card">
+    <h3>{{ rejected_applications }}</h3>
+    <p>Rejected Applications</p>
+</div>
+
+            <div class="quick-card">
+
+                <h2>Platform Overview</h2>
+
+                <p>
+                    Monitor registered users, job vacancies
+                    and applications.
+                </p>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+
+
+
+{% block content %}
+
+<div class="profile-container">
+
+    <div class="profile-header">
+        <h1>My Profile</h1>
+        <p>Update your personal information and skills</p>
+    </div>
+
+    <div class="profile-card">
+
+        <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data"></form>
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    value="{{ current_user.full_name }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ current_user.email }}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value="{{ current_user.phone or '' }}"
+                    placeholder="Enter your phone number"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="skills">Skills</label>
+                <textarea
+                    id="skills"
+                    name="skills"
+                    rows="4"
+                    placeholder="Python, SQL, Flask, Machine Learning"
+                >{{ current_user.skills or '' }}</textarea>
+            </div>
+            <!-- RESUME UPLOAD -->
+
+<div class="form-group">
+
+    <label for="resume">Upload Resume (PDF)</label>
+
+    <input
+        type="file"
+        id="resume"
+        name="resume"
+        accept=".pdf,application/pdf"
+    >
+
+</div>
+
+            <button type="submit" class="save-profile-btn">
+                Save Profile
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<style>
+
+.profile-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.profile-header {
+    margin-bottom: 25px;
+}
+
+.profile-header h1 {
+    color: #6d28d9;
+    font-size: 30px;
+    margin-bottom: 8px;
+}
+
+.profile-header p {
+    color: #777;
+}
+
+.profile-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(109, 40, 217, 0.10);
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.2);
+}
+
+.save-profile-btn {
+    width: 100%;
+    padding: 14px;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-profile-btn:hover {
+    background: #6d28d9;
+}
+
+</style>
+
+{% endblock %}
