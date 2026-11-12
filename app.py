@@ -25,8 +25,25 @@ app.config["MAIL_DEBUG"] = True
 app.config["MAIL_SUPPRESS_SEND"] = False
 mail = Mail(app)
 
-app.config["SECRET_KEY"] = "jobportal-development-secret-key"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///jobportal.db"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+
+if not app.config["SECRET_KEY"]:
+    raise RuntimeError("SECRET_KEY environment variable is not set")
+database_url = os.environ.get("DATABASE_URL")
+
+if database_url:
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace(
+            "postgres://", "postgresql+psycopg://", 1
+        )
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace(
+            "postgresql://", "postgresql+psycopg://", 1
+        )
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///jobportal.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = os.path.join(
     app.root_path, "static", "resumes"
