@@ -10,9 +10,36 @@
         <p>Update your personal information and skills</p>
     </div>
 
+
+<div class="completion-section">
+    <div class="completion-header">
+        <span>Profile Completion</span>
+        <strong>{{ profile_completion }}%</strong>
+    </div>
+
+    <div class="progress-track">
+        <div class="progress-fill"
+             data-progress="{{ profile_completion }}">
+        </div>
+    </div>
+
+    <p>Complete your profile to improve your job application readiness.</p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% set category, message = messages[-1] %}
+        <div class="alert {{ category }}">
+            {{ message }}
+        </div>
+    {% endif %}
+{% endwith %}
+
     <div class="profile-card">
 
-        <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data"></form>
+        <!-- PROFILE FORM -->
+        <form method="POST" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+
             <div class="form-group">
                 <label for="full_name">Full Name</label>
                 <input
@@ -55,20 +82,25 @@
                     placeholder="Python, SQL, Flask, Machine Learning"
                 >{{ current_user.skills or '' }}</textarea>
             </div>
-            <!-- RESUME UPLOAD -->
 
-<div class="form-group">
-
-    <label for="resume">Upload Resume (PDF)</label>
-
-    <input
-        type="file"
-        id="resume"
-        name="resume"
-        accept=".pdf,application/pdf"
-    >
-
-</div>
+            <div class="form-group">
+                <label for="resume">Upload Resume (PDF)</label>
+                <input
+                    type="file"
+                    id="resume"
+                    name="resume"
+                    accept=".pdf,application/pdf"
+                >
+            </div>
+            {% if current_user.resume_filename %}
+    <div class="form-group">
+        <p>Current Resume:</p>
+        <a href="{{ url_for('static', filename='resumes/' + current_user.resume_filename) }}"
+           target="_blank">
+            View Uploaded Resume
+        </a>
+    </div>
+{% endif %}
 
             <button type="submit" class="save-profile-btn">
                 Save Profile
@@ -81,7 +113,6 @@
 </div>
 
 <style>
-
 .profile-container {
     max-width: 750px;
     margin: 40px auto;
@@ -154,6 +185,73 @@
     background: #6d28d9;
 }
 
+.completion-section {
+    background: #f8f7ff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.completion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    color: #333;
+    font-weight: 600;
+}
+
+.completion-header strong {
+    color: #7c3aed;
+}
+
+.progress-track {
+    width: 100%;
+    height: 9px;
+    background: #e5e0f5;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #8b5cf6;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.completion-section p {
+    color: #777;
+    font-size: 13px;
+    margin: 10px 0 0;
+}
+.alert {
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.alert.error {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.alert.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const progress = document.querySelector(".progress-fill");
+
+    if (progress) {
+        progress.style.width = progress.dataset.progress + "%";
+    }
+});
+</script>
 
 {% endblock %}

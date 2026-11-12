@@ -1,3 +1,5 @@
+import email
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +9,8 @@ from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 from database import db, User, Job, Application
 from sqlalchemy import or_
+from flask import current_app
+import re
 
 app = Flask(__name__)
 # Email configuration
@@ -141,7 +145,7 @@ def register():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
-
+    db.session.commit()
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
@@ -758,6 +762,7 @@ def my_applications():
 # PROFILE
 
 
+
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
@@ -769,10 +774,24 @@ def profile():
         phone = request.form.get("phone", "").strip()
         skills = request.form.get("skills", "").strip()
 
+        # Validate required fields
         if not full_name or not email:
-            flash("Full name and email are required.", "error")
-            return redirect(url_for("profile"))
+          flash("Full name and email are required.", "error")
+          return redirect(url_for("profile"))
 
+       # Validate email
+        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+
+        if not re.match(email_pattern, email):
+          flash("Please enter a valid email address.", "error")
+          return redirect(url_for("profile"))
+
+        # Validate phone number (10 digits if provided)
+        if phone and not re.fullmatch(r"[0-9]{10}", phone):
+           flash("Phone number must contain exactly 10 digits.", "error")
+           return redirect(url_for("profile"))
+
+        # Check duplicate email
         existing_user = User.query.filter(
             User.email == email,
             User.id != current_user.id
@@ -782,17 +801,42 @@ def profile():
             flash("This email is already registered.", "error")
             return redirect(url_for("profile"))
 
+        # Update profile information
         current_user.full_name = full_name
         current_user.email = email
         current_user.phone = phone
         current_user.skills = skills
 
+        
+# Resume upload (only when a new file is selected)
+        resume_file = request.files.get("resume")
+
+        if resume_file and resume_file.filename:
+            if not resume_file.filename.lower().endswith(".pdf"):
+                flash("Only PDF resumes are allowed.", "error")
+                return redirect(url_for("profile"))
+
+            os.makedirs("static/resumes", exist_ok=True)
+
+            filename = secure_filename(resume_file.filename)
+            saved_filename = f"user_{current_user.id}_{filename}"
+            resume_path = os.path.join("static", "resumes", saved_filename)
+
+            resume_file.save(resume_path)
+
+            old_resume = current_user.resume_filename
+            if old_resume and old_resume != saved_filename:
+                old_resume_path = os.path.join("static", "resumes", old_resume)
+                if os.path.exists(old_resume_path):
+                    os.remove(old_resume_path)
+
+            current_user.resume_filename = saved_filename
+
         db.session.commit()
-
         flash("Profile updated successfully!", "success")
-
         return redirect(url_for("profile"))
 
+    # Profile completion
     profile_fields = [
         current_user.full_name,
         current_user.email,
@@ -800,20 +844,11 @@ def profile():
         current_user.skills
     ]
 
-    completed_fields = sum(
-        1 for field in profile_fields if field
-    )
-
+    completed_fields = sum(1 for field in profile_fields if field)
     total_fields = len(profile_fields)
+    profile_completion = int((completed_fields / total_fields) * 100)
 
-    profile_completion = int(
-        (completed_fields / total_fields) * 100
-    )
-
-    return render_template(
-        "profile.html",
-        profile_completion=profile_completion
-    )
+    return render_template("profile.html", profile_completion=profile_completion)
 
 
 
