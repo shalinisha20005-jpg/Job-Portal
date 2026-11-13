@@ -535,51 +535,8 @@ def update_application(application_id):
     application.status = new_status
     db.session.commit()
 
-    # Send email notification
-    if new_status in ["Accepted", "Rejected"]:
-        try:
-            applicant_email = application.applicant.email
-
-            if new_status == "Accepted":
-                subject = "Congratulations! Your Job Application is Accepted"
-                body = f"""
-Hello {application.applicant.full_name},
-
-Congratulations! Your application for
-{application.job.title} at {application.job.company_name}
-has been accepted.
-
-Best wishes,
-JobPortal Team
-"""
-            else:
-                subject = "Your Job Application Status"
-                body = f"""
-Hello {application.applicant.full_name},
-
-Your application for
-{application.job.title} at {application.job.company_name}
-has been rejected.
-
-Don't give up! Keep applying for other opportunities.
-
-Best wishes,
-JobPortal Team
-"""
-
-            msg = Message(
-                subject=subject,
-                recipients=[applicant_email],
-                body=body
-            )
-
-            mail.send(msg)
-
-            print("Email notification sent successfully!")
-
-        except Exception as e:
-            print("Email notification failed:", e)
-
+        # Email notification temporarily disabled
+    print("Application status updated. Email notification is disabled.")
     flash("Application status updated successfully!", "success")
 
     return redirect(url_for("employer_applicants"))
